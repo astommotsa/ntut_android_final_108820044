@@ -1,7 +1,13 @@
 package com.example.final_108820044;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.provider.FontRequest;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +24,8 @@ import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Random;
 
+
+
 public class MainActivity extends AppCompatActivity {
     private static final int LETTER_GREY = -1;
     private static final int LETTER_BLANK = 0;
@@ -29,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private  int rowOfTextBox = 0;
     private String answer = "DONOR";
     private String textAnswers = "";
-
     private String _inputText = "";
-    //private TextView _answerText;
+    private boolean isFinished = false;
+    private String messageString = "";
 
     private TextView[] _textBoxes = new TextView[30];
     private Button[] _charButtons = new Button[26];
@@ -110,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void charClick(View view){
         //Log.d("onclick", "char : " + ((Button)view).getText().toString());
-        if(_inputText.length() < 5){
+
+        if(_inputText.length() < 5 && !isFinished){
             _textBoxes[rowOfTextBox + _inputText.length()].setText(((Button)view).getText().toString());
             _inputText = _inputText + ((Button)view).getText().toString();
         }
@@ -124,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
         _inputText = "";
         //_answerText.setText("");
         rowOfTextBox = 0;
+        isFinished = false;
+        messageString = "";
         for(int n = 0; n < _textBoxes.length;n++){
             _textBoxes[n].setText("");
             _textBoxes[n].setTextColor(Color.BLACK);
@@ -134,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         for(int n = 0; n < _charButtons.length;n++){
             _charButtons[n].setTextColor(Color.BLACK);
             _charButtons[n].setBackgroundColor(Color.LTGRAY);
+            gameCharColor[n] = LETTER_BLANK;
         }
     }
 
@@ -156,9 +168,11 @@ public class MainActivity extends AppCompatActivity {
         int[] inputColor =  getColorWithInput(_inputText.toUpperCase(), answer.toUpperCase());
 
         //_answerText.append(_inputText + " : ");
+        boolean gameIsWin = true;
         for(int n = 0; n < answer.length(); n++){
             if(inputColor[n] == LETTER_YELLOW){
                 //_answerText.append("1");
+                gameIsWin = false;
                 _textBoxes[n + rowOfTextBox].setBackgroundColor(Color.YELLOW);
                 _textBoxes[n + rowOfTextBox].setTextColor(Color.WHITE);
             }else if(inputColor[n] == LETTER_GREEN){
@@ -167,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 _textBoxes[n + rowOfTextBox].setTextColor(Color.WHITE);
             }else if(inputColor[n] == LETTER_GREY){
                 //_answerText.append("-1");
+                gameIsWin = false;
                 _textBoxes[n + rowOfTextBox].setBackgroundColor(Color.DKGRAY);
                 _textBoxes[n + rowOfTextBox].setTextColor(Color.WHITE);
             }
@@ -176,6 +191,40 @@ public class MainActivity extends AppCompatActivity {
 
         upDateCharButtons();
         _inputText = "";
+
+        if(rowOfTextBox == 25 || gameIsWin){
+            isFinished = true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("遊戲結束");
+            //builder.setIcon(R.mipmap.ic_launcher_round);
+
+            if(gameIsWin){
+                builder.setMessage("恭喜猜到了\n答案就是 : " + answer);
+                messageString = "wordle謎底 : " + answer  + "\n" + (rowOfTextBox / 5 + 1) + "次就答對了";
+            }else{
+                builder.setMessage("可惜沒猜到\n答案是 : " + answer);
+                messageString = "wordle謎底 : " + answer  + "\n" + "沒有答對QQ";
+            }
+
+
+            //確定 取消 一般 這三種按鈕就看你怎麼發揮你想置入的功能囉
+            builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ClipboardManager myClipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("simple text", messageString);
+                    myClipboard.setPrimaryClip(clip);
+                    dialogInterface.dismiss();
+                }
+            });
+            builder.create().show();
+        }
         rowOfTextBox += 5;
     }
 
