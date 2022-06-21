@@ -2,27 +2,18 @@ package com.example.final_108820044;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.provider.FontRequest;
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.style.IconMarginSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Locale;
 import java.util.Random;
 
 
@@ -53,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView playerText;
     AlertDialog.Builder _builder;
 
-    //private Button _mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Find the TextViews by ID
-        //_answerText = findViewById(R.id.answerText);
-
         _textBoxes[0] = findViewById(R.id.textBox);
         _textBoxes[1] = findViewById(R.id.textBox2);
         _textBoxes[2] = findViewById(R.id.textBox3);
@@ -133,8 +121,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void charClick(View view){
-        //Log.d("onclick", "char : " + ((Button)view).getText().toString());
-
         if(_inputString.length() < 5 && !isFinished){
             if(componentNow == 0){
                 _textBoxes[rowOfTextBox + _inputString.length()].setText(((Button)view).getText().toString());
@@ -152,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //Log.d("onclick", "restart");
                 resetGames();
                 dialogInterface.dismiss();
             }
@@ -172,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("確定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("click", "mode button");
                 if(((Button)view).getText().length() == 4){
                     ((Button)view).setText("battle");
                     gameModeIsSelf = false;
@@ -196,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cancelClick(View view){
-        //Log.d("onclick", "cancel");
         if(_inputString.length() > 0){
             if(componentNow == 0){
                 _textBoxes[_inputString.length() + rowOfTextBox - 1].setText("");
@@ -209,9 +192,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void enterClick(View view){
-        //Log.d("onclick", "enter");
         if(_inputString.length() != 5){
-            //Log.d("debug", "length != 5");
             return;
         }
 
@@ -219,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
             int[] inputColor =  getColorWithInput(_inputString.toUpperCase(), answer.toUpperCase());
             previousAnswers += _inputString.toUpperCase();
 
-            //_answerText.append(_inputString + " : ");
             upDateTextBox(inputColor);
             upDateCharButtons();
             boolean gameIsWin = checkGameIsWin(inputColor);
@@ -231,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
                 isFinished = true;
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("遊戲結束");
-                //builder.setIcon(R.mipmap.ic_launcher_round);
 
                 if(gameIsWin){
                     builder.setMessage("恭喜猜到了\n答案就是 : " + answer);
@@ -245,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
+                        resetGames();
                     }
                 });
                 builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
@@ -254,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
                         ClipData clip = ClipData.newPlainText("simple text", messageString);
                         myClipboard.setPrimaryClip(clip);
                         dialogInterface.dismiss();
+                        resetGames();
                     }
                 });
                 builder.create().show();
@@ -297,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
@@ -306,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
                                 ClipData clip = ClipData.newPlainText("simple text", messageString);
                                 myClipboard.setPrimaryClip(clip);
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.create().show();
@@ -322,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
@@ -331,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
                                 ClipData clip = ClipData.newPlainText("simple text", messageString);
                                 myClipboard.setPrimaryClip(clip);
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.create().show();
@@ -350,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
@@ -359,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
                                 ClipData clip = ClipData.newPlainText("simple text", messageString);
                                 myClipboard.setPrimaryClip(clip);
                                 dialogInterface.dismiss();
+                                resetGames();
                             }
                         });
                         builder.create().show();
@@ -387,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
+                            resetGames();
                         }
                     });
                     builder.setNegativeButton("複製結果", new DialogInterface.OnClickListener() {
@@ -396,10 +384,10 @@ public class MainActivity extends AppCompatActivity {
                             ClipData clip = ClipData.newPlainText("simple text", messageString);
                             myClipboard.setPrimaryClip(clip);
                             dialogInterface.dismiss();
+                            resetGames();
                         }
                     });
                     builder.create().show();
-                    resetGames();
                 }
             }
         }
@@ -489,13 +477,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void upDateAllTextBox() {
-        Log.d("debug_p", previousAnswers);
-        Log.d("debug_p2", previousAnswers2);
-        Log.d("debug_row", String.valueOf(rowOfTextBox));
-        Log.d("debug_row2", String.valueOf(rowOfTextBox2));
         int[] colorFromString = new int[5];
         if(componentNow == 0){
-            Log.d("debug", "com = 0");
             int count = rowOfTextBox / 5;
             for(int i = 0; i < count;i++){
                 colorFromString = getColorWithInput(previousAnswers.substring(i*5, i*5 + 5), answer);
@@ -513,7 +496,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }else{
-            Log.d("debug", "com = 1");
             int[] inputColor = new int[5];
             for(int n = rowOfTextBox2; n < rowOfTextBox2 + 5;n++){
                 _textBoxes[n].setText("");
@@ -596,13 +578,11 @@ public class MainActivity extends AppCompatActivity {
 
     void getRandomAnswer() {
         if(answersFromFile.isEmpty()){
-            Log.d("debug", "read file again");
             readAnswersFromFile();
         }
 
         Random random = new Random();
         int randomNumber = random.nextInt(answersFromFile.length() - 6);
-        Log.d("debug", "random : " + randomNumber);
         while(randomNumber < answersFromFile.length()){
             if(!Character.isLetter(answersFromFile.charAt(randomNumber))){
                 int nextChar = randomNumber + 1;
@@ -610,7 +590,6 @@ public class MainActivity extends AppCompatActivity {
                     nextChar++;
                 }
                 answer = answersFromFile.substring(nextChar, nextChar + 5);
-                Log.d("debug", "answer change to : " + answer);
                 break;
             }else{
                 randomNumber++;
@@ -657,7 +636,6 @@ public class MainActivity extends AppCompatActivity {
                     if(returnColor[n] == 0){
                         returnColor[n] = LETTER_GREY;
                     }
-                    //Log.d("debug", "charAt " + String.valueOf(inputToCheck.charAt(n)));
                     if(gameCharColor[inputToCheck.charAt(n) - charA] == LETTER_BLANK){
                         gameCharColor[inputToCheck.charAt(n) - charA] = LETTER_GREY;
                     }
@@ -686,7 +664,6 @@ public class MainActivity extends AppCompatActivity {
                     if(returnColor[n] == 0){
                         returnColor[n] = LETTER_GREY;
                     }
-                    //Log.d("debug", "charAt " + String.valueOf(inputToCheck.charAt(n)));
                     if(gameCharColor2[inputToCheck.charAt(n) - charA] == LETTER_BLANK){
                         gameCharColor2[inputToCheck.charAt(n) - charA] = LETTER_GREY;
                     }
