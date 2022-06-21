@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     static private int componentNow = 0;
     private boolean gameModeIsSelf = true;
     private boolean isFinished = false;
+    private boolean isPlayerAWin = false;
 
     private TextView[] _textBoxes = new TextView[30];
     private Button[] _charButtons = new Button[26];
@@ -127,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
         if(answersFromFile.isEmpty()){
             readAnswersFromFile();
         }
+
+        getRandomAnswer();
     }
 
     public void charClick(View view){
@@ -195,8 +198,13 @@ public class MainActivity extends AppCompatActivity {
     public void cancelClick(View view){
         //Log.d("onclick", "cancel");
         if(_inputString.length() > 0){
-            _textBoxes[_inputString.length() + rowOfTextBox - 1].setText("");
-            _inputString = _inputString.substring(0, _inputString.length() - 1);
+            if(componentNow == 0){
+                _textBoxes[_inputString.length() + rowOfTextBox - 1].setText("");
+                _inputString = _inputString.substring(0, _inputString.length() - 1);
+            }else{
+                _textBoxes[_inputString.length() + rowOfTextBox2 - 1].setText("");
+                _inputString = _inputString.substring(0, _inputString.length() - 1);
+            }
         }
     }
 
@@ -260,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean gameIsWin = checkGameIsWin(inputColor);
 
                 _inputString = "";
-                isFinished = gameIsWin;
+                isPlayerAWin = gameIsWin;
                 componentNow = 1;
                 rowOfTextBox += 5;
                 playerText.setText("Player B");
@@ -274,7 +282,8 @@ public class MainActivity extends AppCompatActivity {
                 boolean gameIsWin = checkGameIsWin(inputColor);
                 _inputString = "";
 
-                if(isFinished){
+                if(isPlayerAWin){
+                    isFinished = true;
                     if(gameIsWin){
                         //同回合猜到
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -329,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     if(gameIsWin){
                         //b贏
+                        isFinished = true;
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("遊戲結束");
 
@@ -360,9 +370,12 @@ public class MainActivity extends AppCompatActivity {
                     rowOfTextBox2 += 5;
                     playerText.setText("Player A");
                     _inputString = "";
-                    _builder.create().show();
+                    if(!isFinished){
+                        _builder.create().show();
+                    }
                 }else{
                     //結束了
+                    isFinished = true;
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("遊戲結束");
 
@@ -418,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
         rowOfTextBox2 = 0;
         componentNow = 0;
         isFinished = false;
+        isPlayerAWin = false;
         _inputString = "";
         messageString = "";
         previousAnswers = "";
